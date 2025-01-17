@@ -68,6 +68,7 @@ const App = () => {
       <Toaster position="top-center" />
       <div className="flex-grow">
         <Routes>
+          <Route path="/*" element={<Notfound />} />
           <Route path="*" element={<Notfound />} />
           <Route path="/" element={<Navigate to="/login" replace={true} />} />
           <Route path="/login" element={<Login />} />

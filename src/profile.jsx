@@ -119,6 +119,15 @@ const ProfileUpdate = () => {
     window.location.reload();
   };
 
+  const deleteAccount = () => {
+    localStorage.setItem("data", null);
+    navigate("/", {
+      replace: true
+    });
+    window.location.reload();
+    socket.emit("DeleteAccount", credentials)
+  }
+
   return (
     <div className="h-full w-full">
       <div className="overflow-hidden flex justify-center items-center mt-[10vh]">
@@ -151,21 +160,37 @@ const ProfileUpdate = () => {
     )}
   </div>
 
-  {/* Apply Changes Button */}
-  <div className="flex justify-center">
-    <button
-      onClick={handleApplyChanges}
-      className="btn mt-2"
-      disabled={imageUploading || isApplyingChanges}
-      >
-      Apply Changes
-    </button>
+  {/* Put this part before </body> tag */}
+  <input type="checkbox" id="my_modal_6" className="modal-toggle" />
+<div className="modal" role="dialog">
+  <div className="modal-box">
+    <h3 className="text-lg font-bold">Hello!</h3>
+    <p className="py-4">
+      Confirm to delete the account,
+      This action cannot be undo
+    </p>
+    <div className="modal-action">
+      <label htmlFor="my_modal_6" className="btn" onClick={deleteAccount}>Confirm </label>
+      <label htmlFor="my_modal_6" className="btn">Close!</label>
+    </div>
   </div>
-  <div className="mt-4 border p-3 shadow-md">
-    <button className="btn bg-secondary" onClick={logout}>
-      Log out
-    </button>
-  </div>
+</div>
+{/* Apply Changes Button */}
+<div className="flex justify-center">
+  <button
+    onClick={handleApplyChanges}
+    className="btn mt-2"
+    disabled={imageUploading || isApplyingChanges}
+    >
+    Apply Changes
+  </button>
+</div>
+<div className="flex flex-col mt-4 border p-3 shadow-md">
+  <button className="btn bg-secondary" onClick={logout}>
+    Log out
+  </button>
+  <label htmlFor="my_modal_6" className="btn bg-secondary">Delete this account</label>
+</div>
 </div>
 );
 };
