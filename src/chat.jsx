@@ -172,8 +172,7 @@ const ChatApp = () => {
           ref={inputRef}
           />
         <button
-          onClick={sendMessage}
-          className="ml-2 hover:bg-accent-dark text-white px-4 py-4 rounded-full transition flex items-center justify-center hover:outline-base-300 focus:outline-base-300 transition duration-200 "
+          className="ml-2 bg-primary text-white px-4 py-4 rounded-full transition flex items-center justify-center hover:outline-base-300 focus:outline-base-300 transition duration-200 "
           >
           <FontAwesomeIcon icon={faPaperPlane} />
         </button>
@@ -273,7 +272,7 @@ return (
     />
   <button
     onClick={sendMessage}
-    className="ml-2 hover:bg-accent-dark text-white px-4 py-4 rounded-full transition flex items-center justify-center hover:outline-base-300 focus:outline-base-300 transition duration-200 "
+    className="ml-2 bg-primary text-white px-4 py-4 rounded-full transition flex items-center justify-center hover:outline-base-300 focus:outline-base-300 transition duration-200 "
     >
     <FontAwesomeIcon icon={faPaperPlane} />
   </button>
