@@ -47,7 +47,7 @@ const FriendsList = (props) => {
           <div className="gap-1 flex">
             <span className="ml-2">
               <div className="skeleton w-[7vh] h-[7vh] rounded-full overflow-hidden">
-                {item.pr && <img className="h-[7vh] rounded-full object-cover" src={item.pr} alt="" />}
+                {item.pr && <img className=" w-14 h-14 rounded-full object-cover" src={item.pr} alt="" />}
             </div>
           </span>
           <span>

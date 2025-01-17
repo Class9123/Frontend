@@ -1,6 +1,6 @@
 import React, {
   useState,
-  useEffect,
+  useEffect
 } from 'react';
 import {
   useNavigate
@@ -24,20 +24,23 @@ const ProfileUpdate = () => {
     setCredentials
   } = useUserStore();
   const [url,
-    setUrl] = useState(credentials.pr);
+    setUrl] = useState();
   const [selectedImage,
     setSelectedImage] = useState(null);
   const [loading,
     setLoading] = useState(false);
   const [imageUploading,
-    setImageUploading] = useState(false); // To track if the image is being uploaded
+    setImageUploading] = useState(false);
+  const [isApplyingChanges,
+    setIsApplyingChanges] = useState(false);
+
   // Handle image selection
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       // Check image size
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('Image size exceeds 10MB. Please upload a smaller image.');
+      if (file.size > 4 * 1024 * 1024) {
+        toast.error('Image size exceeds 4MB. Please upload a smaller image.');
         return;
       }
 
@@ -52,28 +55,43 @@ const ProfileUpdate = () => {
 
   // Handle apply changes
   const handleApplyChanges = () => {
-    if (imageUploading) {
-      toast.loading('Image is still uploading, please wait...');
+    if (imageUploading || isApplyingChanges) {
+      toast.error('An update is already in progress. Please wait...');
       return;
     }
 
-    console.log('Changes applied');
-
-    // Check if an image is selected
-    if (selectedImage) {
-      setImageUploading(true);
-      const reader = new FileReader();
-      reader.onload = () => {
-        // Emit the profile image to the server
-        socket.emit('profileImageUpdate', {
-          image: reader.result
-        });
-        setLoading(true);
-        console.log('Image sent to socket:', reader.result);
-      };
-      reader.readAsDataURL(selectedImage);
+    if (!selectedImage) {
+      toast.error('Please select an image before applying changes.');
+      return;
     }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const newImageSrc = reader.result;
+
+      // Check if the new image matches the stored image
+      const storedImageSrc = sessionStorage.getItem('profileImage');
+      if (storedImageSrc === newImageSrc) {
+        toast.error('The selected image is already your current profile picture.');
+        return;
+      }
+
+      // Store the new image in sessionStorage
+      sessionStorage.setItem('profileImage', newImageSrc);
+
+      setImageUploading(true);
+      setIsApplyingChanges(true);
+
+      // Emit the profile image to the server
+      socket.emit('profileImageUpdate', {
+        image: newImageSrc
+      });
+      setLoading(true);
+      console.log('Image sent to socket:', newImageSrc);
+    };
+    reader.readAsDataURL(selectedImage);
   };
+
   useEffect(() => {
     // Read from global store
     setUrl(credentials.pr);
@@ -81,28 +99,25 @@ const ProfileUpdate = () => {
     // Listen for changes from the socket
     socket.on('prUrl', (response) => {
       setUrl(response.url);
-      setCredentials((prev) => ({
-        ...prev,
-        pr: response.url,
-      }));
-      setTimeout(()=> {
+      let cr = credentials;
+      cr["pr"] = String(response.url);
+      setCredentials(cr);
+      setTimeout(() => {
         setLoading(false);
         setImageUploading(false);
-      }, 100)
+        setIsApplyingChanges(false); // Reset flag after successful update
+      }, 500);
     });
 
-    return () => {
-      socket.off('prUrl');
-    };
   }, [credentials.pr, setCredentials]);
 
   const logout = () => {
-    localStorage.setItem("data", null)
+    localStorage.setItem("data", null);
     navigate("/", {
       replace: true
-    })
-    window.location.reload()
-  }
+    });
+    window.location.reload();
+  };
 
   return (
     <div className="h-full w-full">
@@ -138,7 +153,11 @@ const ProfileUpdate = () => {
 
   {/* Apply Changes Button */}
   <div className="flex justify-center">
-    <button onClick={handleApplyChanges} className="btn mt-2" disabled={imageUploading}>
+    <button
+      onClick={handleApplyChanges}
+      className="btn mt-2"
+      disabled={imageUploading || isApplyingChanges}
+      >
       Apply Changes
     </button>
   </div>
