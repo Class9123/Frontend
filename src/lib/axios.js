@@ -4,7 +4,7 @@ const axio = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  baseURL:"https://backend-22cx.onrender.com/" ,
+  baseURL:"https://backend-8zgm.onrender.com/" ,
 });
 
 export default axio;
